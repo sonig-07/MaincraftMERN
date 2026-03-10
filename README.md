@@ -1,20 +1,25 @@
-# MERN To-Do List Application
+# MERN To-Do Application
 
-A simple MERN Stack To-Do List application where users can add tasks and view them instantly.
-This project demonstrates how the React frontend communicates with an Express backend and stores data in MongoDB.
-
-## Tech Stack
-
-* React
-* Node.js
-* Express.js
-* MongoDB
+A simple full-stack **MERN (MongoDB, Express, React, Node.js)** To-Do application that allows users to manage tasks with full CRUD operations.
 
 ## Features
 
-* Add a new task
+* Add new tasks
 * View all tasks
+* Edit existing tasks
+* Delete tasks
 * Tasks stored in MongoDB Atlas
+
+## Tech Stack
+
+Frontend
+React, Axios, CSS
+
+Backend
+Node.js, Express.js
+
+Database
+MongoDB Atlas
 
 ## Run Locally
 
@@ -39,3 +44,10 @@ App runs at:
 ```
 http://localhost:3000
 ```
+
+## API Routes
+
+POST `/add` → Add new task
+GET `/tasks` → Fetch all tasks
+PUT `/update/:id` → Update task
+DELETE `/delete/:id` → Delete task
