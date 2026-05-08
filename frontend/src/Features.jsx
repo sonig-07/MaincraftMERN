@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useEffect,
+  useState
+} from "react";
 
 import axios from "axios";
 
@@ -6,182 +9,252 @@ import "./App.css";
 
 function Features() {
 
-  const [tasks, setTasks] = useState([]);
+  const [notes, setNotes] =
+    useState([]);
 
-  const [text, setText] = useState("");
+  const [title, setTitle] =
+    useState("");
+
+  const [content, setContent] =
+    useState("");
+
+  const token =
+    localStorage.getItem("token");
+
+  // FETCH NOTES
+  const fetchNotes = async () => {
+
+    try {
+
+      const res =
+        await axios.get(
+
+          "http://localhost:5000/notes",
+
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+      setNotes(res.data);
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+  };
 
   useEffect(() => {
 
-    axios
-      .get("http://localhost:5000/tasks")
-
-      .then((res) => {
-
-        setTasks(res.data);
-
-      });
+    fetchNotes();
 
   }, []);
 
-  const addTask = () => {
+  // ADD NOTE
+  const addNote = async () => {
 
-    if (!text) {
+    if (!title || !content) {
 
-      alert("Task cannot be empty");
+      alert("Fill all fields");
 
       return;
     }
 
-    axios
-      .post(
-        "http://localhost:5000/add",
+    try {
 
-        { text }
-      )
+      await axios.post(
 
-      .then((res) => {
+        "http://localhost:5000/notes",
 
-        setTasks([
-          res.data,
-          ...tasks
-        ]);
+        {
+          title,
+          content
+        },
 
-        setText("");
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-      });
+      setTitle("");
+
+      setContent("");
+
+      fetchNotes();
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
   };
 
-  const updateTask = (
-    id,
-    oldText
-  ) => {
+  // EDIT NOTE
+const editNote =
+  async (note) => {
 
-    const newText = prompt(
-      "Edit task:",
-      oldText
+    const newTitle = prompt(
+      "Edit title",
+      note.title
     );
 
-    if (!newText) return;
+    const newContent = prompt(
+      "Edit content",
+      note.content
+    );
 
-    axios
-      .put(
+    if (
+      !newTitle ||
+      !newContent
+    ) return;
 
-        `http://localhost:5000/update/${id}`,
+    try {
 
-        { text: newText }
+      await axios.put(
 
-      )
+        `http://localhost:5000/notes/${note._id}`,
 
-      .then((res) => {
+        {
 
-        setTasks(
+          title: newTitle,
 
-          tasks.map((task) =>
+          content: newContent
 
-            task._id === id
-              ? res.data
-              : task
+        },
 
-          )
+        {
 
+          headers: {
+
+            Authorization:
+              `Bearer ${token}`
+
+          }
+
+        }
+      );
+
+      fetchNotes();
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+};
+
+  // DELETE NOTE
+  const deleteNote =
+    async (id) => {
+
+      try {
+
+        await axios.delete(
+
+          `http://localhost:5000/notes/${id}`,
+
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
         );
 
-      });
-  };
+        fetchNotes();
 
-  const deleteTask = (id) => {
+      } catch (err) {
 
-    axios
-      .delete(
+        console.log(err);
 
-        `http://localhost:5000/delete/${id}`
-
-      )
-
-      .then(() => {
-
-        setTasks(
-
-          tasks.filter(
-
-            (task) =>
-              task._id !== id
-
-          )
-
-        );
-
-      });
+      }
   };
 
   return (
 
-    <div className="app">
+    <div className="notes-page">
 
-      <h1>My Tasks</h1>
+      <div className="notes-container">
 
-      <div className="task-input">
+        <h1>My Notes</h1>
 
-        <input
+        <div className="note-form">
 
-          value={text}
+          <input
 
-          onChange={(e) =>
-            setText(e.target.value)
-          }
+            type="text"
 
-          placeholder="Enter new task"
+            placeholder="Note title"
 
-        />
+            value={title}
 
-        <button onClick={addTask}>
+            onChange={(e)=>
+              setTitle(e.target.value)
+            }
 
-          Add
+          />
 
-        </button>
+          <textarea
 
-      </div>
+            placeholder="Write your note..."
 
-      <ul className="task-list">
+            value={content}
 
-        {tasks.map((task) => (
+            onChange={(e)=>
+              setContent(e.target.value)
+            }
 
-          <li
-            key={task._id}
-            className="task-item"
-          >
+          />
 
-            <span>
+          <button onClick={addNote}>
 
-              {task.text}
+            Add Note
 
-            </span>
+          </button>
 
-            <div className="task-buttons">
+        </div>
+
+        <div className="notes-grid">
+
+          {notes.map((note) => (
+
+            <div
+              key={note._id}
+              className="note-card"
+            >
+
+              <h3>
+                {note.title}
+              </h3>
+
+              <p>
+                {note.content}
+              </p>
 
               <button
 
-                className="edit-btn"
+  className="edit-btn"
 
-                onClick={() =>
-                  updateTask(
-                    task._id,
-                    task.text
-                  )
-                }
+  onClick={() =>
+    editNote(note)
+  }
 
-              >
+>
 
-                Edit
+  Edit
 
-              </button>
+</button>
 
               <button
 
                 className="delete-btn"
 
                 onClick={() =>
-                  deleteTask(task._id)
+                  deleteNote(note._id)
                 }
 
               >
@@ -192,13 +265,14 @@ function Features() {
 
             </div>
 
-          </li>
+          ))}
 
-        ))}
+        </div>
 
-      </ul>
+      </div>
 
     </div>
+
   );
 }
 
