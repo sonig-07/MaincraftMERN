@@ -1,8 +1,12 @@
 # Node modules
 node_modules/
+frontend/node_modules/
+backend/node_modules/
 
 # Environment variables
 .env
+backend/.env
+frontend/.env
 
 # Logs
 logs
@@ -14,6 +18,11 @@ yarn-error.log*
 # Build folders
 build/
 dist/
+frontend/build/
+frontend/dist/
+
+# Coverage
+coverage/
 
 # OS files
 .DS_Store
@@ -23,12 +32,6 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Dependency directories
-frontend/node_modules/
-backend/node_modules/
-
-# React build
-frontend/build/
-
 # Misc
 *.swp
+*.swo
