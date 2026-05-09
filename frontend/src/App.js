@@ -1,5 +1,7 @@
 import React from "react";
 
+import AdminNotes from "./AdminNotes";
+
 import {
   BrowserRouter,
   Routes,
@@ -36,7 +38,12 @@ function App() {
           path="/register"
           element={<Register />}
         />
-
+             
+        <Route
+           path="/admin"
+           element={<AdminNotes />}
+        />
+             
         <Route
           path="/dashboard"
           element={<Dashboard />}

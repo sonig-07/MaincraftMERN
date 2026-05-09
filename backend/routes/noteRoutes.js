@@ -4,7 +4,11 @@ const router = express.Router();
 
 const Note = require("../models/Note");
 
-const auth = require("../middleware/auth");
+const auth =
+require("../middleware/auth");
+
+const admin =
+require("../middleware/admin");
 
 const validateNote =
 require("../middleware/validateNote");
@@ -56,8 +60,7 @@ router.post(
 });
 
 
-// GET USER NOTES
-// GET NOTES WITH
+// GET NOTES
 // SEARCH + PAGINATION
 
 router.get(
@@ -282,6 +285,50 @@ router.delete(
       res.status(500).json({
 
         message: err.message
+
+      });
+
+    }
+});
+
+
+// ADMIN
+// VIEW ALL NOTES
+
+router.get(
+
+  "/admin/notes",
+
+  auth,
+
+  admin,
+
+  async (req, res) => {
+
+    try {
+
+      const notes =
+        await Note.find()
+
+        .populate(
+          "owner",
+          "name email"
+        )
+
+        .sort({
+          createdAt: -1
+        });
+
+      res.json(notes);
+
+    } catch (err) {
+
+      console.log(err);
+
+      res.status(500).json({
+
+        message:
+          "Server Error"
 
       });
 

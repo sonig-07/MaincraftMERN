@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, {
+  useState
+} from "react";
 
 function Login() {
 
@@ -37,13 +39,27 @@ function Login() {
         }
       );
 
-      const data = await res.json();
+      const data =
+        await res.json();
 
       if (data.token) {
 
+        // SAVE TOKEN
         localStorage.setItem(
+
           "token",
+
           data.token
+
+        );
+
+        // SAVE USER
+        localStorage.setItem(
+
+          "user",
+
+          JSON.stringify(data.user)
+
         );
 
         window.location.href =
@@ -52,8 +68,10 @@ function Login() {
       } else {
 
         alert(
+
           data.message ||
           "Login Failed"
+
         );
 
       }
@@ -76,27 +94,51 @@ function Login() {
         <h1>Login</h1>
 
         <input
+
           placeholder="Email"
+
           onChange={(e)=>
-            setEmail(e.target.value)}
+
+            setEmail(
+              e.target.value
+            )
+
+          }
+
         />
 
         <input
+
           type="password"
+
           placeholder="Password"
+
           onChange={(e)=>
-            setPassword(e.target.value)}
+
+            setPassword(
+              e.target.value
+            )
+
+          }
+
         />
 
         <button onClick={handleLogin}>
+
           Login
+
         </button>
 
         <p>
+
           Don't have an account?
+
           <a href="/register">
+
             {" "}Register
+
           </a>
+
         </p>
 
       </div>
