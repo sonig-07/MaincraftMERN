@@ -18,8 +18,19 @@ function Features() {
   const [content, setContent] =
     useState("");
 
+  const [search, setSearch] =
+    useState("");
+
+  const [page, setPage] =
+    useState(1);
+
+  const [totalPages,
+    setTotalPages] =
+    useState(1);
+
   const token =
     localStorage.getItem("token");
+
 
   // FETCH NOTES
   const fetchNotes = async () => {
@@ -29,16 +40,21 @@ function Features() {
       const res =
         await axios.get(
 
-          "http://localhost:5000/notes",
+          `http://localhost:5000/notes?search=${search}&page=${page}`,
 
           {
             headers: {
-              Authorization: `Bearer ${token}`
+              Authorization:
+                `Bearer ${token}`
             }
           }
         );
 
-      setNotes(res.data);
+      setNotes(res.data.notes);
+
+      setTotalPages(
+        res.data.totalPages
+      );
 
     } catch (err) {
 
@@ -47,11 +63,13 @@ function Features() {
     }
   };
 
+
   useEffect(() => {
 
     fetchNotes();
 
-  }, []);
+  }, [search, page]);
+
 
   // ADD NOTE
   const addNote = async () => {
@@ -76,7 +94,8 @@ function Features() {
 
         {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization:
+              `Bearer ${token}`
           }
         }
       );
@@ -94,73 +113,41 @@ function Features() {
     }
   };
 
+
   // EDIT NOTE
-const editNote =
-  async (note) => {
+  const editNote =
+    async (note) => {
 
-    const newTitle = prompt(
-      "Edit title",
-      note.title
-    );
-
-    const newContent = prompt(
-      "Edit content",
-      note.content
-    );
-
-    if (
-      !newTitle ||
-      !newContent
-    ) return;
-
-    try {
-
-      await axios.put(
-
-        `http://localhost:5000/notes/${note._id}`,
-
-        {
-
-          title: newTitle,
-
-          content: newContent
-
-        },
-
-        {
-
-          headers: {
-
-            Authorization:
-              `Bearer ${token}`
-
-          }
-
-        }
+      const newTitle = prompt(
+        "Edit title",
+        note.title
       );
 
-      fetchNotes();
+      const newContent = prompt(
+        "Edit content",
+        note.content
+      );
 
-    } catch (err) {
-
-      console.log(err);
-
-    }
-};
-
-  // DELETE NOTE
-  const deleteNote =
-    async (id) => {
+      if (
+        !newTitle ||
+        !newContent
+      ) return;
 
       try {
 
-        await axios.delete(
+        await axios.put(
 
-          `http://localhost:5000/notes/${id}`,
+          `http://localhost:5000/notes/${note._id}`,
+
+          {
+            title: newTitle,
+            content: newContent
+          },
 
           {
             headers: {
-              Authorization: `Bearer ${token}`
+              Authorization:
+                `Bearer ${token}`
             }
           }
         );
@@ -174,6 +161,35 @@ const editNote =
       }
   };
 
+
+  // DELETE NOTE
+  const deleteNote =
+    async (id) => {
+
+      try {
+
+        await axios.delete(
+
+          `http://localhost:5000/notes/${id}`,
+
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`
+            }
+          }
+        );
+
+        fetchNotes();
+
+      } catch (err) {
+
+        console.log(err);
+
+      }
+  };
+
+
   return (
 
     <div className="notes-page">
@@ -181,6 +197,28 @@ const editNote =
       <div className="notes-container">
 
         <h1>My Notes</h1>
+
+
+        {/* SEARCH */}
+
+        <input
+
+          type="text"
+
+          placeholder="Search notes..."
+
+          value={search}
+
+          onChange={(e)=>
+            setSearch(e.target.value)
+          }
+
+          className="search-input"
+
+        />
+
+
+        {/* FORM */}
 
         <div className="note-form">
 
@@ -218,6 +256,9 @@ const editNote =
 
         </div>
 
+
+        {/* NOTES */}
+
         <div className="notes-grid">
 
           {notes.map((note) => (
@@ -235,37 +276,84 @@ const editNote =
                 {note.content}
               </p>
 
-              <button
+              <div className="note-buttons">
 
-  className="edit-btn"
+                <button
 
-  onClick={() =>
-    editNote(note)
-  }
+                  className="edit-btn"
 
->
+                  onClick={() =>
+                    editNote(note)
+                  }
 
-  Edit
+                >
 
-</button>
+                  Edit
 
-              <button
+                </button>
 
-                className="delete-btn"
+                <button
 
-                onClick={() =>
-                  deleteNote(note._id)
-                }
+                  className="delete-btn"
 
-              >
+                  onClick={() =>
+                    deleteNote(note._id)
+                  }
 
-                Delete
+                >
 
-              </button>
+                  Delete
+
+                </button>
+
+              </div>
 
             </div>
 
           ))}
+
+        </div>
+
+
+        {/* PAGINATION */}
+
+        <div className="pagination">
+
+          <button
+
+            disabled={page === 1}
+
+            onClick={() =>
+              setPage(page - 1)
+            }
+
+          >
+
+            Previous
+
+          </button>
+
+          <span>
+
+            Page {page}
+
+          </span>
+
+          <button
+
+            disabled={
+              page === totalPages
+            }
+
+            onClick={() =>
+              setPage(page + 1)
+            }
+
+          >
+
+            Next
+
+          </button>
 
         </div>
 

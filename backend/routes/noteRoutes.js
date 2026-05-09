@@ -57,6 +57,9 @@ router.post(
 
 
 // GET USER NOTES
+// GET NOTES WITH
+// SEARCH + PAGINATION
+
 router.get(
 
   "/notes",
@@ -67,24 +70,94 @@ router.get(
 
     try {
 
+      const search =
+        req.query.search || "";
+
+      const page =
+        parseInt(req.query.page) || 1;
+
+      const limit = 5;
+
+      const skip =
+        (page - 1) * limit;
+
       const notes =
         await Note.find({
 
-          owner: req.user.id
+          owner: req.user.id,
 
-        }).sort({
+          $or: [
 
+            {
+              title: {
+                $regex: search,
+                $options: "i"
+              }
+            },
+
+            {
+              content: {
+                $regex: search,
+                $options: "i"
+              }
+            }
+
+          ]
+
+        })
+
+        .sort({
           createdAt: -1
+        })
+
+        .skip(skip)
+
+        .limit(limit);
+
+      const total =
+        await Note.countDocuments({
+
+          owner: req.user.id,
+
+          $or: [
+
+            {
+              title: {
+                $regex: search,
+                $options: "i"
+              }
+            },
+
+            {
+              content: {
+                $regex: search,
+                $options: "i"
+              }
+            }
+
+          ]
 
         });
 
-      res.json(notes);
+      res.json({
+
+        notes,
+
+        currentPage: page,
+
+        totalPages:
+          Math.ceil(total / limit)
+
+      });
 
     } catch (err) {
 
+      console.log(err);
+
       res.status(500).json({
 
-        message: err.message
+        message:
+          "Server Error"
 
       });
 
