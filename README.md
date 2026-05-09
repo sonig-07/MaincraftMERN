@@ -1,50 +1,78 @@
-# MERN Authenticated To-Do Application
+# MERN Multi-User Notes Management System
 
-A full-stack MERN (MongoDB, Express, React, Node.js) application with JWT Authentication and CRUD-based task management.
+A full-stack MERN (MongoDB, Express.js, React.js, Node.js) application with JWT Authentication, Role-Based Access Control, and a secure multi-user Notes Management System.
 
-Users can register, login securely, and manage their personal tasks through a protected dashboard.
+Users can register, login securely, create personal notes, search notes, paginate results, and manage their own content through protected APIs.
+
+Admins can view all user notes through a dedicated admin panel.
 
 ---
 
-## Features
+# Features
 
-### Authentication
+## Authentication & Security
+
 - User Registration
 - User Login
-- JWT Token Authentication
+- JWT Authentication
 - Password Hashing using bcryptjs
+- Protected Routes
 - Logout Functionality
-- Protected Dashboard
-
-### Task Management
-- Add new tasks
-- View all tasks
-- Edit tasks
-- Delete tasks
-- MongoDB Atlas integration
+- Owner-Based Authorization
+- Role-Based Access Control (User/Admin)
 
 ---
 
-## Tech Stack
+## Notes Management
 
-### Frontend
+- Create Notes
+- View Personal Notes
+- Edit Notes
+- Delete Notes
+- Multi-User Note Isolation
+- Notes linked to specific owners
+
+---
+
+## Advanced Features
+
+- Search Notes
+- Pagination
+- Validation Middleware
+- Admin Notes Panel
+- Protected Admin Routes
+
+---
+
+# Tech Stack
+
+## Frontend
+
 - React.js
 - React Router DOM
 - Axios
 - CSS
 
-### Backend
+---
+
+## Backend
+
 - Node.js
 - Express.js
 - JWT Authentication
 - bcryptjs
-
-### Database
-- MongoDB Atlas
+- Middleware Architecture
 
 ---
 
-## Project Structure
+## Database
+
+- MongoDB Atlas
+- Mongoose
+
+---
+
+# Project Structure
 
 ```bash
 frontend/
@@ -56,17 +84,23 @@ frontend/
 │   ├── Register.js
 │   ├── Dashboard.js
 │   ├── Features.jsx
+│   ├── AdminNotes.js
 │   └── App.css
 
 backend/
 │
+├── middleware/
+│   ├── auth.js
+│   ├── admin.js
+│   └── validateNote.js
+│
 ├── models/
-│   ├── Task.js
-│   └── User.js
+│   ├── User.js
+│   └── Note.js
 │
 ├── routes/
 │   ├── authRoutes.js
-│   └── taskRoutes.js
+│   └── noteRoutes.js
 │
 ├── server.js
 └── .env
@@ -74,14 +108,14 @@ backend/
 
 ---
 
-## Run Locally
+# Run Locally
 
-### Backend
+## Backend
 
 ```bash
 cd backend
 npm install
-npm run dev
+node server.js
 ```
 
 Backend runs at:
@@ -92,7 +126,7 @@ http://localhost:5000
 
 ---
 
-### Frontend
+## Frontend
 
 ```bash
 cd frontend
@@ -108,29 +142,82 @@ http://localhost:3000
 
 ---
 
-## Authentication Routes
+# Authentication Routes
 
-POST `/register`
-→ Register new user
+## Register User
 
-POST `/login`
-→ Login existing user
-
----
-
-## Task Routes
-
-GET `/tasks` → Fetch all tasks
-
-POST `/add` → Add new task
-
-PUT `/update/:id` → Update task
-
-DELETE `/delete/:id` → Delete task
+```http
+POST /register
+```
 
 ---
 
-## Environment Variables
+## Login User
+
+```http
+POST /login
+```
+
+---
+
+# Notes Routes
+
+## Create Note
+
+```http
+POST /notes
+```
+
+---
+
+## Get Notes
+
+```http
+GET /notes
+```
+
+Supports:
+
+- Search
+- Pagination
+
+Example:
+
+```http
+/notes?search=react&page=1
+```
+
+---
+
+## Update Note
+
+```http
+PUT /notes/:id
+```
+
+---
+
+## Delete Note
+
+```http
+DELETE /notes/:id
+```
+
+---
+
+# Admin Routes
+
+## View All Notes
+
+```http
+GET /admin/notes
+```
+
+Accessible only by admin users.
+
+---
+
+# Environment Variables
 
 Create `.env` inside backend folder:
 
@@ -141,16 +228,29 @@ JWT_SECRET=your_secret_key
 
 ---
 
-## Future Improvements
+# Security Features
 
-- User-specific tasks
-- Dark mode
-- Task completion status
-- Due dates
-- Deployment on Render/Vercel
+- JWT Token Verification
+- Protected APIs
+- Owner-Based Authorization
+- Role-Based Authorization
+- Password Hashing
+- Validation Middleware
 
 ---
 
-## Author
+# Future Improvements
+
+- Rich Text Notes Editor
+- Dark Mode
+- File/Image Uploads
+- Note Categories
+- Email Notifications
+- Cloud Deployment
+- Responsive Mobile UI
+
+---
+
+# Author
 
 Soni G
